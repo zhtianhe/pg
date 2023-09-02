@@ -39,7 +39,11 @@ type Options struct {
 	// ApplicationName is the application name. Used in logs on Pg side.
 	// Only available from pg-9.0.
 	ApplicationName string
-
+	
+	// Options User GreePlum  options=-c%20gp_session_role%3dutility
+	// postgres://User:Password@Addr/Database?sslmode=disable&options=xxx
+	Options string
+	
 	// TLS config for secure connections.
 	TLSConfig *tls.Config
 
@@ -239,6 +243,13 @@ func ParseURL(sURL string) (*Options, error) {
 
 	delete(query, "application_name")
 
+	//optinos
+	 if optionsList, ok := query["options"]; ok && len(optionsList) > 0 {
+	         options.Options = optionsList[0]
+	 }
+	
+	 delete(query, "options")
+	
 	if connTimeout, ok := query["connect_timeout"]; ok && len(connTimeout) > 0 {
 		ct, err := strconv.Atoi(connTimeout[0])
 		if err != nil {
