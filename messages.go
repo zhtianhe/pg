@@ -76,10 +76,10 @@ const (
 var errEmptyQuery = internal.Errorf("pg: query is empty")
 
 func (db *baseDB) startup(
-	c context.Context, cn *pool.Conn, user, password, database, appName string,
+	c context.Context, cn *pool.Conn, user, password, database, appName, options string,
 ) error {
 	err := cn.WithWriter(c, db.opt.WriteTimeout, func(wb *pool.WriteBuffer) error {
-		writeStartupMsg(wb, user, database, appName)
+		writeStartupMsg(wb, user, database, appName,options)
 		return nil
 	})
 	if err != nil {
@@ -443,7 +443,7 @@ func md5s(s string) string {
 	return hex.EncodeToString(h[:])
 }
 
-func writeStartupMsg(buf *pool.WriteBuffer, user, database, appName string) {
+func writeStartupMsg(buf *pool.WriteBuffer, user, database, appName, options string) {
 	buf.StartMessage(0)
 	buf.WriteInt32(196608)
 	buf.WriteString("user")
@@ -454,6 +454,12 @@ func writeStartupMsg(buf *pool.WriteBuffer, user, database, appName string) {
 		buf.WriteString("application_name")
 		buf.WriteString(appName)
 	}
+	
+	if options != "" {
+		buf.WriteString("options")
+		buf.WriteString(options)
+        }
+
 	buf.WriteString("")
 	buf.FinishMessage()
 }
