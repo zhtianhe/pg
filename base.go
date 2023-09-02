@@ -109,7 +109,7 @@ func (db *baseDB) initConn(ctx context.Context, cn *pool.Conn) error {
 		}
 	}
 
-	err := db.startup(ctx, cn, db.opt.User, db.opt.Password, db.opt.Database, db.opt.ApplicationName)
+	err := db.startup(ctx, cn, db.opt.User, db.opt.Password, db.opt.Database, db.opt.ApplicationName, db.opt.Options)
 	if err != nil {
 		return err
 	}
